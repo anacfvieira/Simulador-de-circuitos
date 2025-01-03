@@ -51,7 +51,7 @@ Circuito& Circuito::operator=(const Circuito& C)
   clear();
 
   Nin_circ = C.Nin_circ;
-  ports = C.ports;
+  for (const auto& p : C.ports) this->ports.push_back(p->clone());
   out_circ = C.out_circ;
   id_in = C.id_in;
   id_out = C.id_out;
@@ -62,9 +62,16 @@ Circuito& Circuito::operator=(const Circuito& C)
 // Operador de atribuicao por movimento
 Circuito& Circuito::operator=(Circuito&& C) noexcept
 {
-  //
-  // FALTA IMPLEMENTAR
-  //
+  if (this==&C) return *this;
+
+  clear();
+
+  swap(Nin_circ, C.Nin_circ);
+  swap(ports, C.ports);
+  swap(out_circ, C.out_circ);
+  swap(id_in, C.id_in);
+  swap(id_out, C.id_out);
+
   return *this;
 }
 
@@ -73,9 +80,14 @@ void Circuito::resize(int NI, int NO, int NP)
 {
   if (NI<=0 || NO<=0 || NP<=0) return;
 
-  //
-  // FALTA IMPLEMENTAR
-  //
+  clear();
+
+  Nin_circ = NI;
+  out_circ.resize(NO);
+  id_in.resize(NP);
+  id_out.resize(NO);
+  for (int i=0; i<NP; ++i) id_in.at(i).resize(NP);
+
 }
 
 /// ***********************

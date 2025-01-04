@@ -86,7 +86,7 @@ void Circuito::resize(int NI, int NO, int NP)
   out_circ.resize(NO);
   id_in.resize(NP);
   id_out.resize(NO);
-  for (int i=0; i<NP; ++i) id_in.at(i).resize(NP);
+  for (int i=0; i<NP; ++i) id_in.at(i).resize(0);
 
 }
 
@@ -178,9 +178,18 @@ bool Circuito::setPort(int IdPort, std::string& Tipo, int Nin)
   // - cria a nova porta
   // - redimensiona o vetor de conexoes da porta
 
-  //
-  // FALTA IMPLEMENTAR
-  //
+  // Cria a nova porta
+  ptr_Porta p;
+  if (Tipo=="NT") p = new PortaNOT();
+  else if (Tipo=="AN") p = new PortaAND(Nin);
+  else if (Tipo=="NA") p = new PortaNAND(Nin);
+  else if (Tipo=="OR") p = new PortaOR(Nin);
+  else if (Tipo=="NO") p = new PortaNOR(Nin);
+  else if (Tipo=="XO") p = new PortaXOR(Nin);
+  else if (Tipo=="NX") p = new PortaNXOR(Nin);
+
+  // Redimensiona o vetor de conexoes da porta
+  id_in.at(IdPort-1).resize(Nin);
 
   return true;
 }
@@ -349,10 +358,36 @@ bool Circuito::simular(const std::vector<bool3S>& in_circ)
   // Soh simula se o cicuito e o parametro forem validos
   if (!valid() || int(in_circ.size())!=getNumInputs()) return false;
 
-  //
-  // FALTA IMPLEMENTAR
-  //
-  return false;  // REMOVA DEPOIS DE IMPLEMENTAR
+  for (id = 0; id <= getNumPorts(); ++id){
+    out_port[id] = UNDEF;
+  }
+
+  do {
+    tudo_def = true;
+    alguma_def = false;
+
+    for (id = 0; id <= getNumPorts(); ++id){
+      if (out_port[id] == UNDEF){
+        for (j = 0; j < getNumInputsPort(id); ++j){
+          id_orig = id_in[id][j];
+          in_port[j] = (id_orig > 0) ? out_port[id_orig] : in_circ[id_orig];
+        }
+
+        simular(in_port);
+
+        if (out_port[id] == UNDEF){
+          tudo_def = false;
+        } else {
+          alguma_def = true;
+        }
+      }
+    }
+  } while (!tudo_def && alguma_def);
+
+  for (id = 0; id <= getNumOutputs(); ++id){
+    id_orig = id_out[id];
+    out_circ[id] = (id_orig > 0) ? out_port[id_orig] : in_circ[id_orig];
+  }
 
   // Tudo OK com a simulacao
   return true;

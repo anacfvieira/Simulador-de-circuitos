@@ -98,10 +98,11 @@ public:
   // Construtor default (fixa o numero de entradas da porta como sendo 1)
   PortaNOT(): Porta(1) {}
   // DEMAIS FUNCOES DA PORTA
-  //
-  // FALTA DECLARAR
-  //
-  
+  ptr_Porta clone() const override{}
+  std::string getName() const override{}
+  bool simular(const std::vector<bool3S>& in_port) override{}
+
+  }
 };
 
 class PortaAND: public Porta
@@ -116,9 +117,9 @@ public:
     if (NI<2) Nin_port=0;
   }
   // DEMAIS FUNCOES DA PORTA
-  //
-  // FALTA DECLARAR
-  //
+  ptr_Porta clone() const override{}
+  std::string getName() const override{}
+  bool simular(const std::vector<bool3S>& in_port) override{}
 };
 
 class PortaNAND: public Porta
@@ -133,9 +134,9 @@ public:
     if (NI<2) Nin_port=0;
   }
   // DEMAIS FUNCOES DA PORTA
-  //
-  // FALTA DECLARAR
-  //
+  ptr_Porta clone() const override{}
+  std::string getName() const override{}
+  bool simular(const std::vector<bool3S>& in_port) override{}
 };
 
 class PortaOR: public Porta
@@ -150,9 +151,9 @@ public:
     if (NI<2) Nin_port=0;
   }
   // DEMAIS FUNCOES DA PORTA
-  //
-  // FALTA DECLARAR
-  //
+  ptr_Porta clone() const override{}
+  std::string getName() const override{}
+  bool simular(const std::vector<bool3S>& in_port) override{}
 };
 
 class PortaNOR: public Porta
@@ -167,9 +168,9 @@ public:
     if (NI<2) Nin_port=0;
   }
   // DEMAIS FUNCOES DA PORTA
-  //
-  // FALTA DECLARAR
-  //
+  ptr_Porta clone() const override{}
+  std::string getName() const override{}
+  bool simular(const std::vector<bool3S>& in_port) override{}
 };
 
 class PortaXOR: public Porta
@@ -184,9 +185,9 @@ public:
     if (NI<2) Nin_port=0;
   }
   // DEMAIS FUNCOES DA PORTA
-  //
-  // FALTA DECLARAR
-  //
+  ptr_Porta clone() const override{}
+  std::string getName() const override{}
+  bool simular(const std::vector<bool3S>& in_port) override{}
 };
 
 class PortaNXOR: public Porta
@@ -201,9 +202,9 @@ public:
     if (NI<2) Nin_port=0;
   }
   // DEMAIS FUNCOES DA PORTA
-  //
-  // FALTA DECLARAR
-  //
+  ptr_Porta clone() const override{}
+  std::string getName() const override{}
+  bool simular(const std::vector<bool3S>& in_port) override{}
 };
 
 #endif // _PORTA_H_

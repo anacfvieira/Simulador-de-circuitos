@@ -366,7 +366,6 @@ bool Circuito::simular(const std::vector<bool3S>& in_circ)
 
   bool tudo_def, alguma_def;
   int id_orig;
-  std::vector<bool3S> in_port;
 
   // Inicializa as saidas do circuito como indefinidas
   for (auto p : ports) p->setOutput(bool3S::UNDEF);
@@ -377,22 +376,25 @@ bool Circuito::simular(const std::vector<bool3S>& in_circ)
 
     for (int id = 0; id < getNumPorts(); ++id){
       if (ports[id]->getOutput() == bool3S::UNDEF){
-        for (int j = 0; j < getNumInputsPort(id+1); ++j){
-          id_orig = getIdInPort(id+1, j);
+          std::vector<bool3S> in_port;
+          in_port.resize(getNumInputsPort(id));
+        for (int j = 0; j < getNumInputsPort(id); ++j){
+          id_orig = getIdInPort(id, j);
 
-          in_port[j] = (id_orig > 0) ? ports[id_orig-1]->getOutput() : in_circ[id_orig];
+          in_port[j] = (id_orig > 0) ? ports[id_orig-1]->getOutput() : in_circ[-id_orig-1];
           } 
-        }
+        
         ports[id]->simular(in_port);
 
         if (ports[id]->getOutput() == bool3S::UNDEF) tudo_def = false;
         else alguma_def = true;
+      }
     }
   } while (!tudo_def && alguma_def);
 
-  for (int id = 0; id <= getNumOutputs(); ++id){
+  for (int id = 0; id < getNumOutputs(); ++id){
     id_orig = id_out[id];
-    out_circ[id] = (id_orig > 0) ? ports[id_orig-1]->getOutput() : in_circ[id_orig];
+    out_circ[id] = (id_orig > 0) ? ports[id_orig-1]->getOutput() : in_circ[-id_orig-1];
   }
 
   // Tudo OK com a simulacao

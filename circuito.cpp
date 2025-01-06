@@ -178,6 +178,8 @@ bool Circuito::setPort(int IdPort, std::string& Tipo, int Nin)
   // - cria a nova porta
   // - redimensiona o vetor de conexoes da porta
 
+  ports.at(IdPort-1) = nullptr;
+
   // Cria a nova porta
   ptr_Porta p;
   if (Tipo=="NT") p = new PortaNOT();
@@ -187,6 +189,9 @@ bool Circuito::setPort(int IdPort, std::string& Tipo, int Nin)
   else if (Tipo=="NO") p = new PortaNOR(Nin);
   else if (Tipo=="XO") p = new PortaXOR(Nin);
   else if (Tipo=="NX") p = new PortaNXOR(Nin);
+
+  // Insere a nova porta no vetor de portas
+  ports.at(IdPort-1) = p;
 
   // Redimensiona o vetor de conexoes da porta
   id_in.at(IdPort-1).resize(Nin);
@@ -358,35 +363,35 @@ bool Circuito::simular(const std::vector<bool3S>& in_circ)
   // Soh simula se o cicuito e o parametro forem validos
   if (!valid() || int(in_circ.size())!=getNumInputs()) return false;
 
-  for (id = 0; id <= getNumPorts(); ++id){
-    out_port[id] = UNDEF;
-  }
+  bool tudo_def, alguma_def;
+  int id_orig;
+  std::vector<bool3S> in_port;
+
+  // Inicializa as saidas do circuito como indefinidas
+  for (auto p : ports) p->setOutput(bool3S::UNDEF);
 
   do {
     tudo_def = true;
     alguma_def = false;
 
-    for (id = 0; id <= getNumPorts(); ++id){
-      if (out_port[id] == UNDEF){
-        for (j = 0; j < getNumInputsPort(id); ++j){
-          id_orig = id_in[id][j];
-          in_port[j] = (id_orig > 0) ? out_port[id_orig] : in_circ[id_orig];
-        }
+    for (int id = 0; id < getNumPorts(); ++id){
+      if (ports[id]->getOutput() == bool3S::UNDEF){
+        for (int j = 0; j < getNumInputsPort(id+1); ++j){
+          id_orig = getIdInPort(id+1, j);
 
-        simular(in_port);
-
-        if (out_port[id] == UNDEF){
-          tudo_def = false;
-        } else {
-          alguma_def = true;
+          in_port[j] = (id_orig > 0) ? ports[id_orig-1]->getOutput() : in_circ[id_orig];
+          } 
         }
-      }
+        ports[id]->simular(in_port);
+
+        if (ports[id]->getOutput() == bool3S::UNDEF) tudo_def = false;
+        else alguma_def = true;
     }
   } while (!tudo_def && alguma_def);
 
-  for (id = 0; id <= getNumOutputs(); ++id){
+  for (int id = 0; id <= getNumOutputs(); ++id){
     id_orig = id_out[id];
-    out_circ[id] = (id_orig > 0) ? out_port[id_orig] : in_circ[id_orig];
+    out_circ[id] = (id_orig > 0) ? ports[id_orig-1]->getOutput() : in_circ[id_orig];
   }
 
   // Tudo OK com a simulacao

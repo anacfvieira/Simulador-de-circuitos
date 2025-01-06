@@ -83,6 +83,7 @@ void Circuito::resize(int NI, int NO, int NP)
   clear();
 
   Nin_circ = NI;
+  ports.resize(NP, nullptr);
   out_circ.resize(NO);
   id_in.resize(NP);
   id_out.resize(NO);
@@ -181,7 +182,7 @@ bool Circuito::setPort(int IdPort, std::string& Tipo, int Nin)
   ports.at(IdPort-1) = nullptr;
 
   // Cria a nova porta
-  ptr_Porta p;
+  ptr_Porta p = nullptr;
   if (Tipo=="NT") p = new PortaNOT();
   else if (Tipo=="AN") p = new PortaAND(Nin);
   else if (Tipo=="NA") p = new PortaNAND(Nin);
